@@ -4,8 +4,6 @@
 
 Tone tone1;
 
-int buzzer = 12;
-
 // CONFIG KEYPAD
 const byte rows = 4;
 const byte columns = 4;
@@ -60,7 +58,7 @@ char initialPassword[4];
 int currentLength = 0;
 
 int Scount = 12;     // count seconds
-int Mcount = 0;      // count minutes
+int Mcount = 3;      // count minutes
 int Hcount = 0;      // count hours
 int DefuseTimer = 0; // set timer to 0
 
@@ -95,6 +93,14 @@ void startMenu()
   lcd.clear();
 }
 
+void blinkLed()
+{
+  digitalWrite(ledPin, HIGH);
+  delay(10);
+  digitalWrite(ledPin, LOW);
+  delay(10);
+}
+
 void setup()
 {
   // put your setup code here, to run once:
@@ -122,7 +128,8 @@ void setup()
     {
       lcd.print(key);
       initialPassword[currentLength] = key;
-      tone1.play(NOTE_C6, 200);
+      tone1.play(NOTE_C4, 200);
+      blinkLed();
       currentLength++;
     }
   }

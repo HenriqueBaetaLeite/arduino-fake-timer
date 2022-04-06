@@ -4,6 +4,8 @@
 
 Tone tone1;
 
+int buzzer = 12;
+
 // CONFIG KEYPAD
 const byte rows = 4;
 const byte columns = 4;
@@ -33,8 +35,8 @@ LiquidCrystal lcd(7, 6, 5, 4, 3, 2);
 const String welcomeMessage = "Welcome to the";
 const String welcomeMessage2 = "bomb game defuse";
 
-const String startMessage = "To start the game";
-const String pressStart = "PRESS 'A'";
+const String setTime = "Set password";
+const String setTime2 = "4 digits";
 
 // BOMB CHAR
 
@@ -54,7 +56,7 @@ char initialPassword[4];
 int currentLength = 0;
 
 int Scount = 12;     // count seconds
-int Mcount = 10;     // count minutes
+int Mcount = 0;      // count minutes
 int Hcount = 0;      // count hours
 int DefuseTimer = 0; // set timer to 0
 
@@ -75,38 +77,32 @@ void startMenu()
   lcd.write((byte)0);
   lcd.setCursor(0, 1);
   lcd.print(welcomeMessage2);
+  lcd.setCursor(4, 1);
+  lcd.write((byte)0);
+  lcd.setCursor(9, 1);
+  lcd.write((byte)0);
+  delay(4500);
+  lcd.clear();
+  lcd.setCursor(2, 0);
+  lcd.print(setTime);
+  lcd.setCursor(3, 1);
+  lcd.print(setTime2);
   delay(3000);
   lcd.clear();
-  lcd.setCursor(4, 0);
-  lcd.print(pressStart);
-  lcd.setCursor(0, 1);
-  lcd.write((byte)0);
-  lcd.setCursor(7, 1);
-  lcd.write((byte)0);
-  lcd.setCursor(15, 1);
-  lcd.write((byte)0);
-  delay(3000);
-  lcd.clear();
-}
-
-void newPassword(String password, char key)
-{
-  if (password.length() < 6)
-  {
-    password += key;
-    Serial.println(password);
-  }
 }
 
 void setup()
 {
   // put your setup code here, to run once:
   Serial.begin(9600);
-  tone1.begin(20);
+  tone1.begin(12);
   lcd.begin(16, 2);
   lcd.createChar(0, bombChar);
   startMenu();
-  lcd.setCursor(0, 0);
+
+  lcd.clear();
+
+  lcd.home();
   lcd.print("Enter code:");
 
   while (currentLength < 4)
@@ -136,7 +132,7 @@ void setup()
     lcd.print(initialPassword[2]);
     lcd.print(initialPassword[3]);
 
-    //    tone1.play(NOTE_E6, 200);
+    tone1.play(NOTE_E6, 200);
     delay(3000);
     lcd.clear();
 

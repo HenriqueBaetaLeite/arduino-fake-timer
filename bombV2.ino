@@ -52,6 +52,10 @@ byte bombChar[] = {
 
 //
 
+int ledPin = 19;  // red led
+int ledPin2 = 20; // yellow led
+int ledPin3 = 21; // green led
+
 char initialPassword[4];
 int currentLength = 0;
 
@@ -94,6 +98,9 @@ void startMenu()
 void setup()
 {
   // put your setup code here, to run once:
+  pinMode(ledPin, OUTPUT);
+  pinMode(ledPin2, OUTPUT);
+  pinMode(ledPin3, OUTPUT);
   Serial.begin(9600);
   tone1.begin(12);
   lcd.begin(16, 2);
@@ -115,6 +122,7 @@ void setup()
     {
       lcd.print(key);
       initialPassword[currentLength] = key;
+      tone1.play(NOTE_C6, 200);
       currentLength++;
     }
   }
@@ -197,7 +205,7 @@ void loop()
         lcd.home();
         lcd.print("Bomb Defused");
         currentLength = 0;
-        //              digitalWrite(ledPin3, HIGH);
+        digitalWrite(ledPin3, HIGH);
         delay(2500);
         lcd.setCursor(0, 1);
         lcd.print("Reset the Bomb");
@@ -228,16 +236,6 @@ void loop()
       }
     }
   }
-
-  //  if (theKey != NO_KEY) {
-  //    Serial.println(theKey);
-  //    lcd.clear();
-  //    lcd.setCursor(4, 0);
-  //    lcd.print(theKey);
-  ////    newPassword(initialPassword, theKey);
-  ////    lcd.blink();
-  ////    newPassword(initialPassword);
-  //  };
 }
 
 void timer()
@@ -258,22 +256,22 @@ void timer()
 
       while (Mcount < 0)
       {
-        //        digitalWrite(ledPin, HIGH); // sets the LED on
+        digitalWrite(ledPin, HIGH); // sets the LED on
         tone1.play(NOTE_A2, 90);
         delay(100);
-        //        digitalWrite(ledPin, LOW); // sets the LED off
+        digitalWrite(ledPin, LOW); // sets the LED off
         tone1.play(NOTE_A2, 90);
         delay(100);
-        //        digitalWrite(ledPin2, HIGH); // sets the LED on
+        digitalWrite(ledPin2, HIGH); // sets the LED on
         tone1.play(NOTE_A2, 90);
         delay(100);
-        //        digitalWrite(ledPin2, LOW); // sets the LED off
+        digitalWrite(ledPin2, LOW); // sets the LED off
         tone1.play(NOTE_A2, 90);
         delay(100);
-        //        digitalWrite(ledPin3, HIGH); // sets the LED on
+        digitalWrite(ledPin3, HIGH); // sets the LED on
         tone1.play(NOTE_A2, 90);
         delay(100);
-        //        digitalWrite(ledPin3, LOW); // sets the LED off
+        digitalWrite(ledPin3, LOW); // sets the LED off
         tone1.play(NOTE_A2, 90);
         delay(100);
       }
@@ -351,11 +349,11 @@ void timer()
     {
       tone1.play(NOTE_G5, 200);
       secMillis = currentMillis;
-      Scount--;  // add 1 to Scount
-                 //          digitalWrite(ledPin2, HIGH); // sets the LED on
-      delay(10); // waits for a second
-                 //          digitalWrite(ledPin2, LOW); // sets the LED off
-      delay(10); // waits for a second
+      Scount--;                    // add 1 to Scount
+      digitalWrite(ledPin2, HIGH); // sets the LED on
+      delay(10);                   // waits for a second
+      digitalWrite(ledPin2, LOW);  // sets the LED off
+      delay(10);                   // waits for a second
       // lcd.clear();
     }
   }

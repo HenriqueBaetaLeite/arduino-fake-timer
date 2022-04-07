@@ -50,9 +50,9 @@ byte bombChar[] = {
 
 //
 
-int ledYellow = 19;  // red led
-int ledRed = 20; // yellow led
-int ledGreen = 21; // green led
+int ledYellow = 19; // red led
+int ledRed = 20;    // yellow led
+int ledGreen = 21;  // green led
 
 char initialPassword[4];
 int currentLength = 0;
@@ -99,15 +99,16 @@ void startMenu()
 
 void blinkAllLeds(int loops)
 {
-  for (int index = 0; index < loops; index ++) {
-  digitalWrite(ledYellow, HIGH);
-  digitalWrite(ledGreen, HIGH);
-  digitalWrite(ledRed, HIGH);
-  delay(50);
-  digitalWrite(ledYellow, LOW);
-  digitalWrite(ledGreen, LOW);
-  digitalWrite(ledRed, LOW);
-  delay(50);
+  for (int index = 0; index < loops; index++)
+  {
+    digitalWrite(ledYellow, HIGH);
+    digitalWrite(ledGreen, HIGH);
+    digitalWrite(ledRed, HIGH);
+    delay(50);
+    digitalWrite(ledYellow, LOW);
+    digitalWrite(ledGreen, LOW);
+    digitalWrite(ledRed, LOW);
+    delay(50);
   }
 }
 
@@ -116,6 +117,13 @@ void blinkYellow()
   digitalWrite(ledYellow, HIGH);
   delay(50);
   digitalWrite(ledYellow, LOW);
+  delay(50);
+}
+
+void blinkRed() {
+  digitalWrite(ledRed, HIGH);
+  delay(50);
+  digitalWrite(ledRed, LOW);
   delay(50);
 }
 
@@ -148,32 +156,40 @@ void bombArmed()
   lcd.write((byte)0);
   lcd.setCursor(14, 0);
   lcd.write((byte)0);
-  
+
   currentLength = 0;
 }
 
-void beginAllSetup() {
-  pinMode(ledYellow, OUTPUT);
-  pinMode(ledRed, OUTPUT);
-  pinMode(ledGreen, OUTPUT);
-  Serial.begin(9600);
-  tone1.begin(12);
-  lcd.begin(16, 2);
-  lcd.createChar(0, bombChar);
+void bombDefused()
+{
+  lcd.noCursor();
+  lcd.clear();
+  lcd.setCursor(2, 0);
+  blinkAllLeds(15);
+  lcd.print("Bomb Defused");
+  currentLength = 0;
+  digitalWrite(ledGreen, HIGH);
+  digitalWrite(ledYellow, HIGH);
+  delay(2500);
+  lcd.setCursor(1, 1);
+  lcd.print("Reset the Bomb");
+  delay(1000000);
 }
 
-void setup()
-{
-  // put your setup code here, to run once:
-  beginAllSetup();
-  startMenu();
+void restartPasswordToDefuse() {
+  blinkRed();
+  currentLength = 0;
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Code: ");
+  Serial.println(currentLength);
+}
 
-
-  while (currentLength < 4)
-  {
-    char key = myKeypad.getKey();
+void digitNewPassword() {
+  char key = myKeypad.getKey();
     lcd.setCursor(currentLength + 6, 1);
     lcd.cursor();
+    digitalWrite(ledYellow, HIGH);
 
     if (key != NO_KEY && key != '*' && key != '#')
     {
@@ -183,13 +199,42 @@ void setup()
       blinkYellow();
       currentLength++;
     }
+}
+
+void beginAllSetup()
+{
+  pinMode(ledYellow, OUTPUT);
+  pinMode(ledRed, OUTPUT);
+  pinMode(ledGreen, OUTPUT);
+  Serial.begin(9600);
+  tone1.begin(12);
+  lcd.begin(16, 2);
+  lcd.createChar(0, bombChar);
+}
+
+// CHECK IF THE PASSWORD ENTERED IS EQUAL TO THE PASSWORD SETTED
+boolean passwordIsCorrect = entered[0] == initialPassword[0] && entered[1] == initialPassword[1] && entered[2] == initialPassword[2] && entered[3] == initialPassword[3];
+
+
+// SETUP ARDUINO
+void setup()
+{
+  // put your setup code here, to run once:
+  beginAllSetup();
+  startMenu();
+
+  while (currentLength < 4)
+  {
+    digitNewPassword();
   }
-// Quando o password for setado com 4 digitos, a bomba é armada!
+  // Quando o password for setado com 4 digitos, a bomba é armada!
   if (currentLength == 4)
   {
     bombArmed();
   }
 }
+
+// LOOP ARDUINO
 
 void loop()
 {
@@ -198,14 +243,13 @@ void loop()
   char theKey = myKeypad.getKey();
   timer();
 
+
+//  TO START TYPING THE PASSWORD DIGIT #
+
   if (theKey == '#')
   {
-    digitalWrite(ledRed, HIGH);
-    currentLength = 0;
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("Code: ");
-    Serial.println(currentLength);
+    restartPasswordToDefuse();
+    
 
     while (currentLength < 4)
     {
@@ -213,15 +257,16 @@ void loop()
       timer();
 
       char key2 = myKeypad.getKey();
+
+//     SE A TECLA PRESSIONADA FOR #, REINICIA A DIGITAÇÃO DO PASSWORD, TBM PODE SER USADO PARA CORRIGIR A SENHA DIGITADA
       if (key2 == '#')
       {
-        currentLength = 0;
-        lcd.clear();
-        lcd.setCursor(0, 0);
-        lcd.print("Code: ");
+        restartPasswordToDefuse();
       }
       else if (key2 != NO_KEY)
       {
+        tone1.play(NOTE_F6, 200);
+        blinkYellow();
 
         lcd.setCursor(currentLength + 7, 0);
         lcd.cursor();
@@ -229,8 +274,7 @@ void loop()
         lcd.print(key2);
         entered[currentLength] = key2;
         currentLength++;
-        tone1.play(NOTE_F6, 200);
-        blinkYellow();
+        
         delay(50);
         lcd.noCursor();
         lcd.setCursor(currentLength + 6, 0);
@@ -240,22 +284,13 @@ void loop()
       }
     }
 
+//    Caso o password tenha 4 dígitos e esteja correto, a bomba é desarmada
+
     if (currentLength == 4)
     {
-      if (entered[0] == initialPassword[0] && entered[1] == initialPassword[1] && entered[2] == initialPassword[2] && entered[3] == initialPassword[3])
+      if (passwordIsCorrect)
       {
-        lcd.noCursor();
-        lcd.clear();
-        lcd.setCursor(2, 0);
-        blinkAllLeds(15);
-        lcd.print("Bomb Defused");
-        currentLength = 0;
-        digitalWrite(ledGreen, HIGH);
-        digitalWrite(ledYellow, HIGH);
-        delay(2500);
-        lcd.setCursor(1, 1);
-        lcd.print("Reset the Bomb");
-        delay(1000000);
+        bombDefused();
       }
       else
       {
@@ -286,8 +321,8 @@ void loop()
 
 void timer()
 {
-  Serial.print(Scount);
-  Serial.println();
+//  Serial.print(Scount);
+//  Serial.println();
 
   if (Hcount <= 0)
   {
@@ -395,11 +430,11 @@ void timer()
     {
       tone1.play(NOTE_G5, 200);
       secMillis = currentMillis;
-      Scount--;                    // add 1 to Scount
+      Scount--;                   // add 1 to Scount
       digitalWrite(ledRed, HIGH); // sets the LED on
-      delay(10);                   // waits for a second
+      delay(10);                  // waits for a second
       digitalWrite(ledRed, LOW);  // sets the LED off
-      delay(10);                   // waits for a second
+      delay(10);                  // waits for a second
       // lcd.clear();
     }
   }

@@ -128,7 +128,7 @@ void setup()
     {
       lcd.print(key);
       initialPassword[currentLength] = key;
-      tone1.play(NOTE_C4, 200);
+      tone1.play(30 * currentLength, 200);
       blinkLed();
       currentLength++;
     }
@@ -165,6 +165,7 @@ void loop()
 
   if (theKey == '#')
   {
+    digitalWrite(ledPin2, HIGH);
     currentLength = 0;
     lcd.clear();
     lcd.setCursor(0, 0);
@@ -193,9 +194,9 @@ void loop()
         lcd.print(key2);
         entered[currentLength] = key2;
         currentLength++;
-        tone1.play(NOTE_C6, 200);
+        tone1.play(currentLength * 40, 200);
         blinkLed();
-        delay(100);
+        delay(50);
         lcd.noCursor();
         lcd.setCursor(currentLength + 6, 0);
         lcd.print("*");

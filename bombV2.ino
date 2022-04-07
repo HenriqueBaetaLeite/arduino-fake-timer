@@ -83,8 +83,8 @@ void startMenu()
   lcd.write((byte)0);
   lcd.setCursor(9, 1);
   lcd.write((byte)0);
-  delay(3000);
   blinkAllLeds(10);
+  delay(3000);
   lcd.clear();
   lcd.setCursor(2, 0);
   lcd.print(setPasswordMSG);
@@ -92,6 +92,9 @@ void startMenu()
   lcd.print(setPasswordMSG2);
   delay(2500);
   lcd.clear();
+  lcd.home();
+  blinkAllLeds(5);
+  lcd.print("Enter code:");
 }
 
 void blinkAllLeds(int loops)
@@ -119,12 +122,13 @@ void blinkYellow()
 void bombArmed()
 {
   delay(500);
+  blinkAllLeds(5);
   lcd.noCursor();
   lcd.clear();
   lcd.home();
   lcd.print("You've Entered: ");
   lcd.setCursor(6, 1);
-  blinkAllLeds(10);
+  blinkAllLeds(5);
   lcd.print(initialPassword[0]);
   lcd.print(initialPassword[1]);
   lcd.print(initialPassword[2]);
@@ -134,17 +138,21 @@ void bombArmed()
   delay(3000);
   lcd.clear();
 
-  lcd.setCursor(1, 0);
+  lcd.setCursor(2, 0);
   lcd.print("Bomb armed!");
   lcd.setCursor(0, 0);
+  lcd.write((byte)0);
+  lcd.setCursor(1, 0);
+  lcd.write((byte)0);
+  lcd.setCursor(13, 0);
+  lcd.write((byte)0);
+  lcd.setCursor(14, 0);
   lcd.write((byte)0);
   
   currentLength = 0;
 }
 
-void setup()
-{
-  // put your setup code here, to run once:
+void beginAllSetup() {
   pinMode(ledYellow, OUTPUT);
   pinMode(ledRed, OUTPUT);
   pinMode(ledGreen, OUTPUT);
@@ -152,12 +160,14 @@ void setup()
   tone1.begin(12);
   lcd.begin(16, 2);
   lcd.createChar(0, bombChar);
+}
 
+void setup()
+{
+  // put your setup code here, to run once:
+  beginAllSetup();
   startMenu();
 
-  lcd.home();
-  blinkAllLeds(5);
-  lcd.print("Enter code:");
 
   while (currentLength < 4)
   {
@@ -169,7 +179,7 @@ void setup()
     {
       lcd.print(key);
       initialPassword[currentLength] = key;
-      tone1.play(NOTE_G4, 200);
+      tone1.play(NOTE_B4, 200);
       blinkYellow();
       currentLength++;
     }

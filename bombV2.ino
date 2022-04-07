@@ -127,6 +127,13 @@ void blinkRed() {
   delay(50);
 }
 
+void blinkGreen() {
+  digitalWrite(ledGreen, HIGH);
+  delay(50);
+  digitalWrite(ledGreen, LOW);
+  delay(50);
+}
+
 void bombArmed()
 {
   delay(500);
@@ -142,7 +149,7 @@ void bombArmed()
   lcd.print(initialPassword[2]);
   lcd.print(initialPassword[3]);
 
-  tone1.play(NOTE_E6, 500);
+  tone1.play(NOTE_E6, 700);
   delay(3000);
   lcd.clear();
 
@@ -168,12 +175,15 @@ void bombDefused()
   blinkAllLeds(15);
   lcd.print("Bomb Defused");
   currentLength = 0;
-  digitalWrite(ledGreen, HIGH);
-  digitalWrite(ledYellow, HIGH);
+  
+  blinkAllLeds(20);
   delay(2500);
   lcd.setCursor(1, 1);
   lcd.print("Reset the Bomb");
-  delay(1000000);
+  digitalWrite(ledGreen, HIGH);
+  digitalWrite(ledYellow, HIGH);
+  delay(100000);
+  tone1.stop();
 }
 
 void restartPasswordToDefuse() {
@@ -187,18 +197,18 @@ void restartPasswordToDefuse() {
 
 void digitNewPassword() {
   char key = myKeypad.getKey();
-    lcd.setCursor(currentLength + 6, 1);
-    lcd.cursor();
-    digitalWrite(ledYellow, HIGH);
+  lcd.setCursor(currentLength + 6, 1);
+  lcd.cursor();
+  digitalWrite(ledYellow, HIGH);
 
-    if (key != NO_KEY && key != '*' && key != '#')
-    {
-      lcd.print(key);
-      initialPassword[currentLength] = key;
-      tone1.play(NOTE_B4, 200);
-      blinkYellow();
-      currentLength++;
-    }
+  if (key != NO_KEY && key != '*' && key != '#')
+  {
+    lcd.print(key);
+    initialPassword[currentLength] = key;
+    tone1.play(NOTE_B4, 200);
+    blinkYellow();
+    currentLength++;
+  }
 }
 
 void beginAllSetup()
@@ -270,8 +280,8 @@ void loop()
 
         lcd.setCursor(currentLength + 7, 0);
         lcd.cursor();
-
         lcd.print(key2);
+        
         entered[currentLength] = key2;
         currentLength++;
         

@@ -194,6 +194,7 @@ void loop()
         entered[currentLength] = key2;
         currentLength++;
         tone1.play(NOTE_C6, 200);
+        blinkLed();
         delay(100);
         lcd.noCursor();
         lcd.setCursor(currentLength + 6, 0);
